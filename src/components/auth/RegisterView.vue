@@ -13,10 +13,16 @@
           <h1 class="text-xl font-semibold text-slate-600 text-left">
             Register
           </h1>
-          <form class="mt-8" action="/register" method="POST">
+          <form
+            class="mt-8"
+            action="/register"
+            method="POST"
+            @submit.prevent="handleSubmitRegisterUser"
+          >
             <div class="relative">
               <input
                 id="fullname"
+                v-model="newUser.fullname"
                 name="fullname"
                 type="text"
                 class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-purple-600"
@@ -31,6 +37,7 @@
             <div class="mt-8 relative">
               <input
                 id="username"
+                v-model="newUser.username"
                 name="username"
                 type="text"
                 class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-purple-600"
@@ -45,6 +52,7 @@
             <div class="mt-8 relative">
               <input
                 id="password"
+                v-model="newUser.password"
                 type="password"
                 name="password"
                 class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-purple-600"
@@ -59,6 +67,7 @@
             <div class="mt-8 relative">
               <input
                 id="repeatPassword"
+                v-model="newUser.repeatPassword"
                 type="password"
                 name="repeatPassword"
                 class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-purple-600"
@@ -71,10 +80,38 @@
               >
             </div>
             <button
+              v-if="!submitForm"
               type="submit"
               class="mt-8 px-4 py-2 rounded bg-purple-500 hover:bg-purple-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-purple-500 focus:ring-opacity-80 cursor-pointer"
             >
               Daftar
+            </button>
+            <button
+              v-else
+              type="button"
+              class="mt-8 px-4 py-2 rounded bg-purple-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-purple-500 focus:ring-opacity-80 cursor-pointer"
+              disabled
+            >
+              <svg
+                class="animate-spin mx-auto h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
             </button>
           </form>
           <p class="mt-4 block text-slate-500 text-xs text-center">
@@ -101,9 +138,94 @@
   </section>
 </template>
 
-<script>
-export default {
-  name: "RegisterView",
+<script setup>
+import { ref } from "vue";
+import { db } from "@/firebase";
+import {
+  collection,
+  addDoc,
+  query,
+  getDocs,
+  where,
+  limit,
+} from "firebase/firestore";
+import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const newUser = ref({
+  username: "",
+  fullname: "",
+  password: "",
+  repeatPassword: "",
+});
+
+const submitForm = ref(false);
+
+const handleSubmitRegisterUser = async () => {
+  if (newUser.value.password.length < 4) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Password minimal 4 karakter!",
+    });
+  } else if (newUser.value.password !== newUser.value.repeatPassword) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Kata sandi tidak sesuai!",
+    });
+  } else {
+    const q = query(
+      collection(db, "users"),
+      where("username", "==", newUser.value.username),
+      limit(1)
+    );
+
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot.size);
+    if (querySnapshot.size == 1) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Username telah ditambahkan sebelumnya!",
+      });
+    } else {
+      submitForm.value = true;
+      // Add a new document with a generated id.
+      const docRef = await addDoc(collection(db, "users"), {
+        fullname: newUser.value.fullname,
+        username: newUser.value.username,
+        password: newUser.value.password,
+        avatar: "user.jpg",
+        created_at: Date.now(),
+      })
+        .then((data) => {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Registrasi akun berhasil",
+            confirmButtonText: "Ok",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              router.push({ name: "login" });
+            }
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          Swal.fire({
+            icon: "error",
+            title: "Terjadi kesalahan...",
+            text: "Gagal melakukan registrasi akun",
+          });
+        })
+        .finally(() => {
+          submitForm.value = false;
+        });
+    }
+  }
 };
 </script>
 

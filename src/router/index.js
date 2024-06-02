@@ -2,12 +2,24 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../components/auth/LoginView.vue";
 import RegisterView from "../components/auth/RegisterView.vue";
+import NewChat from "../views/NewChatView.vue";
+import ChatRoom from "../views/ChatRoomView.vue";
 
 const routes = [
   {
     path: "/",
     name: "home",
     component: HomeView,
+  },
+  {
+    path: "/newchat",
+    name: "newchat",
+    component: NewChat,
+  },
+  {
+    path: "/chat/:id",
+    name: "chat-room",
+    component: ChatRoom,
   },
   {
     path: "/login",
