@@ -1,5 +1,5 @@
 <template>
-  <header class="flex justify-between bg-purple-600 py-2 px-3">
+  <header v-if="!type" class="flex justify-between bg-purple-600 py-2 px-3">
     <h1 class="text-xl font-bold text-white">Khaylila-Chat</h1>
     <button>
       <svg
@@ -13,6 +13,36 @@
       </svg>
     </button>
   </header>
+  <header v-else class="flex flex-row items-center bg-purple-600 py-2 px-3">
+    <button class="mr-3" @click="handleBackToContact">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-3 fill-white"
+        viewBox="0 0 320 512"
+      >
+        <path
+          d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"
+        />
+      </svg>
+    </button>
+    <img
+      src="../assets/logo.png"
+      class="w-7 rounded-full mr-2 border border-slate-400"
+      alt="profile"
+    />
+    <h1 class="text-xl font-semibold text-white line-clamp-1">
+      {{ name }}
+    </h1>
+  </header>
 </template>
 
-<script setup></script>
+<script setup>
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const { type, name } = defineProps(["type", "name"]);
+
+const handleBackToContact = () => {
+  router.push({ name: "home" });
+};
+</script>
