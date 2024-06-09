@@ -133,7 +133,6 @@ const handleTimestamp = (ts) => {
   }
 
   const date = new Date(ts);
-  // return ts;
   // Get the last two digits of the year
   const year = String(date.getFullYear());
 
@@ -156,7 +155,10 @@ const handleTimestamp = (ts) => {
   <div class="w-96 mx-auto">
     <Header type="chat" :name="headerName" />
     <section id="main" class="border border-slate-300 h-screen relative">
-      <div class="h-full overflow-y-scroll pb-20" id="message-body">
+      <div
+        class="h-full scrollbar-none overflow-y-scroll pb-20"
+        id="message-body"
+      >
         <template v-if="isLoading">
           <svg
             class="animate-spin mx-auto mt-5 h-20 w-20 text-purple-500"
