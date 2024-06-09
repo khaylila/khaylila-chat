@@ -116,12 +116,12 @@
           </form>
           <p class="mt-4 block text-slate-500 text-xs text-center">
             Already have an account?
-            <a
-              href="/login"
+            <router-link
               class="text-purple-600 hover:underline focus:outline-none focus:ring-2 focus:ring-purple-500"
+              :to="{ name: 'login' }"
             >
               Masuk
-            </a>
+            </router-link>
           </p>
         </div>
       </div>

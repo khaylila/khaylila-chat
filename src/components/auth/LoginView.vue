@@ -56,12 +56,12 @@
           </form>
           <p class="mt-4 block text-slate-500 text-xs text-center">
             Don't have an account?
-            <a
-              href="/register"
+            <router-link
               class="text-purple-600 hover:underline focus:outline-none focus:ring-2 focus:ring-purple-500"
+              :to="{ name: 'register' }"
             >
               Create One
-            </a>
+            </router-link>
           </p>
         </div>
       </div>

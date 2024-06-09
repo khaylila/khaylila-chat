@@ -98,18 +98,6 @@ onMounted(async () => {
 const handleContactClick = async (id) => {
   console.log(id);
   router.push({ name: "chat-room", params: { id: id } });
-  // const participants = [localStorage.getItem("user"), id];
-  // console.log(participants);
-  // const q = query(
-  //   collection(db, "chats_room"),
-  //   where("participants", "array-contains", participants)
-  // );
-
-  // const querySnapshot = await getDocs(q);
-  // querySnapshot.forEach((doc) => {
-  //   console.log(doc.data());
-  // });
-  // console.log(querySnapshot.empty);
 };
 </script>
 

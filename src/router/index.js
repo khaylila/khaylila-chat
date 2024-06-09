@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../components/auth/LoginView.vue";
 import RegisterView from "../components/auth/RegisterView.vue";
 import ChatRoom from "../views/ChatRoomView.vue";
+import ProfileView from "../views/ProfileView.vue";
 
 const routes = [
   {
@@ -53,7 +54,7 @@ const routes = [
   {
     path: "/profile",
     name: "profile",
-    component: ChatRoom,
+    component: ProfileView,
   },
 ];
 

@@ -132,7 +132,7 @@ const handleTimestamp = (ts) => {
     return `${Math.floor(diff / 3600)} jam yang lalu`;
   }
 
-  const date = new Date(ts);
+  const date = new Date(ts * 1000);
   // Get the last two digits of the year
   const year = String(date.getFullYear());
 
