@@ -1,6 +1,6 @@
 <template>
   <section id="main">
-    <div class="container">
+    <div class="mx-auto container">
       <img
         src="../../assets/logo.png"
         class="mt-12 w-36 rounded-full border-1 border-slate-700 block mx-auto"

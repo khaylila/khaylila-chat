@@ -25,11 +25,17 @@ const routes = [
     path: "/login",
     name: "login",
     component: LoginView,
+    meta: {
+      requiresAuth: false,
+    },
   },
   {
     path: "/register",
     name: "register",
     component: RegisterView,
+    meta: {
+      requiresAuth: false,
+    },
   },
   {
     path: "/logout",
@@ -44,15 +50,11 @@ const routes = [
       requiresAuth: true,
     },
   },
-  // {
-  //   path: "/about",
-  //   name: "about",
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () =>
-  //     import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  // },
+  {
+    path: "/profile",
+    name: "profile",
+    component: ChatRoom,
+  },
 ];
 
 const router = createRouter({
@@ -62,17 +64,21 @@ const router = createRouter({
 
 // Navigation guard to check if the user is authenticated
 router.beforeEach((to, from, next) => {
+  if (to.name == "login" || to.name == "register") {
+    if (localStorage.getItem("user")) {
+      return next("/");
+    }
+  }
+
   // Check if the route requires authentication
   if (to.meta.requiresAuth) {
     // Check if the user is logged in
     if (!localStorage.getItem("user")) {
-      next("login");
-    } else {
-      next();
+      return next("login");
     }
-  } else {
-    next();
   }
+
+  return next();
 });
 
 export default router;
