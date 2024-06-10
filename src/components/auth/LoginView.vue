@@ -48,8 +48,16 @@
               >
             </div>
             <button
+              v-if="!submitForm"
               type="submit"
               class="mt-8 px-4 py-2 rounded bg-purple-500 hover:bg-purple-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-purple-500 focus:ring-opacity-80 cursor-pointer"
+            >
+              Masuk
+            </button>
+            <button
+              v-else
+              type="button"
+              class="mt-8 px-4 py-2 rounded bg-purple-300 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-purple-500 focus:ring-opacity-80 cursor-pointer"
             >
               Masuk
             </button>
@@ -95,33 +103,37 @@ const user = ref({
 const submitForm = ref(false);
 
 const handleSubmitLoginUser = async () => {
-  if (user.value.username != "" && user.value.password != "") {
-    const q = query(
-      collection(db, "users"),
-      where("username", "==", user.value.username),
-      limit(1)
-    );
+  if (!submitForm.value) {
+    if (user.value.username != "" && user.value.password != "") {
+      submitForm.value = true;
+      const q = query(
+        collection(db, "users"),
+        where("username", "==", user.value.username),
+        limit(1)
+      );
 
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Akun tidak ditemukan!",
-      });
-    } else {
-      querySnapshot.forEach((doc) => {
-        if (user.value.password != doc.data().password) {
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Kata sandi tidak sesuai!",
-          });
-        } else {
-          localStorage.setItem("user", doc.id);
-          router.push({ name: "home" });
-        }
-      });
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Akun tidak ditemukan!",
+        });
+      } else {
+        querySnapshot.forEach((doc) => {
+          if (user.value.password != doc.data().password) {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Kata sandi tidak sesuai!",
+            });
+          } else {
+            localStorage.setItem("user", doc.id);
+            router.push({ name: "home" });
+          }
+        });
+      }
+      submitForm.value = false;
     }
   }
 };

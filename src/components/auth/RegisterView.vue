@@ -19,6 +19,7 @@
             method="POST"
             @submit.prevent="handleSubmitRegisterUser"
           >
+            <!-- <div class="mt-8"> -->
             <div class="relative">
               <input
                 id="fullname"
@@ -89,7 +90,7 @@
             <button
               v-else
               type="button"
-              class="mt-8 px-4 py-2 rounded bg-purple-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-purple-500 focus:ring-opacity-80 cursor-pointer"
+              class="mt-8 px-4 py-2 rounded bg-purple-300 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-purple-500 focus:ring-opacity-80 cursor-pointer"
               disabled
             >
               <svg
@@ -114,6 +115,7 @@
               </svg>
             </button>
           </form>
+          <!-- </div> -->
           <p class="mt-4 block text-slate-500 text-xs text-center">
             Already have an account?
             <router-link
@@ -164,66 +166,72 @@ const newUser = ref({
 const submitForm = ref(false);
 
 const handleSubmitRegisterUser = async () => {
-  if (newUser.value.password.length < 4) {
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Password minimal 4 karakter!",
-    });
-  } else if (newUser.value.password !== newUser.value.repeatPassword) {
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Kata sandi tidak sesuai!",
-    });
-  } else {
-    const q = query(
-      collection(db, "users"),
-      where("username", "==", newUser.value.username),
-      limit(1)
-    );
-
-    const querySnapshot = await getDocs(q);
-    console.log(querySnapshot.size);
-    if (querySnapshot.size == 1) {
+  if (!submitForm.value) {
+    submitForm.value = true;
+    if (newUser.value.password.length < 4) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Username telah ditambahkan sebelumnya!",
+        text: "Password minimal 4 karakter!",
       });
+      submitForm.value = false;
+    } else if (newUser.value.password !== newUser.value.repeatPassword) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Kata sandi tidak sesuai!",
+      });
+      submitForm.value = false;
     } else {
-      submitForm.value = true;
-      // Add a new document with a generated id.
-      const docRef = await addDoc(collection(db, "users"), {
-        fullname: newUser.value.fullname,
-        username: newUser.value.username,
-        password: newUser.value.password,
-        avatar: "user.jpg",
-        created_at: Date.now(),
-      })
-        .then((data) => {
-          Swal.fire({
-            icon: "success",
-            title: "Success!",
-            text: "Registrasi akun berhasil",
-            confirmButtonText: "Ok",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              router.push({ name: "login" });
-            }
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-          Swal.fire({
-            icon: "error",
-            title: "Terjadi kesalahan...",
-            text: "Gagal melakukan registrasi akun",
-          });
-        })
-        .finally(() => {
-          submitForm.value = false;
+      const q = query(
+        collection(db, "users"),
+        where("username", "==", newUser.value.username),
+        limit(1)
+      );
+
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot.size);
+      if (querySnapshot.size == 1) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Username telah ditambahkan sebelumnya!",
         });
+        submitForm.value = false;
+      } else {
+        submitForm.value = true;
+        // Add a new document with a generated id.
+        const docRef = await addDoc(collection(db, "users"), {
+          fullname: newUser.value.fullname,
+          username: newUser.value.username,
+          password: newUser.value.password,
+          avatar: "user.jpg",
+          created_at: Date.now(),
+        })
+          .then((data) => {
+            Swal.fire({
+              icon: "success",
+              title: "Success!",
+              text: "Registrasi akun berhasil",
+              confirmButtonText: "Ok",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                router.push({ name: "login" });
+              }
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              icon: "error",
+              title: "Terjadi kesalahan...",
+              text: "Gagal melakukan registrasi akun",
+            });
+          })
+          .finally(() => {
+            submitForm.value = false;
+          });
+      }
     }
   }
 };
